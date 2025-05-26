@@ -2,13 +2,13 @@
 
 # Tarefa: IoT Security Lab - EmbarcaTech 2025
 
-Autor: **Insira Seu Nome**
+Autores: **Daltro Oliveira Vinuto e Kyara Esteves de Sousa**
 
 Curso: Residência Tecnológica em Sistemas Embarcados
 
 Instituição: EmbarcaTech - HBr
 
-Campinas, ___ de 2025
+Brasília, Maio de 2025
 
 ---
 
@@ -18,3 +18,5 @@ Campinas, ___ de 2025
 
 ## 📜 Licença
 GNU GPL-3.0.
+
+Foi criada uma pasta chamada assets/ que contem os printscreens relacionados ao checklist das tarefa Segurança em IoT com a BitDogLab.
