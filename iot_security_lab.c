@@ -16,10 +16,10 @@ int main() {
 
     // Configura o cliente MQTT
     // Parâmetros: ID do cliente, IP do broker, usuário, senha
-    mqtt_setup("bitdog1", "192.168.15.145", "aluno", "senha123");
+    mqtt_setup("bitdog1", "192.168.15.23", "aluno", "senha123");
 
     // Mensagem original a ser enviada
-    const char *mensagem = "26.5";
+    const char *mensagem = "40";
     // Buffer para mensagem criptografada (16 bytes)
     uint8_t criptografada[16];
     // Criptografa a mensagem usando XOR com chave 42
