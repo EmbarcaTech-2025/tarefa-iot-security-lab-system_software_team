@@ -11,6 +11,34 @@
  * 'static' limita o escopo deste arquivo */
 static mqtt_client_t *client;
 
+
+
+static void mqtt_pub_request_cb(void *arg, err_t result) {
+    if (result == ERR_OK) {
+        printf("Publicação MQTT enviada com sucesso!\n");
+    } else {
+        printf("Erro ao publicar via MQTT: %d\n", result);
+    }
+}
+
+void mqtt_comm_publish(const char *topic, const uint8_t *data, size_t len) {
+    // Envia a mensagem MQTT
+    err_t status = mqtt_publish(
+        client,              // Instância do cliente
+        topic,               // Tópico de publicação
+        data,                // Dados a serem enviados
+        len,                 // Tamanho dos dados
+        0,                   // QoS 0 (nenhuma confirmação)
+        0,                   // Não reter mensagem
+        mqtt_pub_request_cb, // Callback de confirmação
+        NULL                 // Argumento para o callback
+    );
+
+    if (status != ERR_OK) {
+        printf("mqtt_publish falhou ao ser enviada: %d\n", status);
+    }
+}
+
 /* Callback de conexão MQTT - chamado quando o status da conexão muda
  * Parâmetros:
  *   - client: instância do cliente MQTT
@@ -131,35 +159,8 @@ void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, cons
 
 
 
+
 /*
-
-static void mqtt_pub_request_cb(void *arg, err_t result) {
-    if (result == ERR_OK) {
-        printf("Publicação MQTT enviada com sucesso!\n");
-    } else {
-        printf("Erro ao publicar via MQTT: %d\n", result);
-    }
-}
-
-void mqtt_comm_publish(const char *topic, const uint8_t *data, size_t len) {
-    // Envia a mensagem MQTT
-    err_t status = mqtt_publish(
-        client,              // Instância do cliente
-        topic,               // Tópico de publicação
-        data,                // Dados a serem enviados
-        len,                 // Tamanho dos dados
-        0,                   // QoS 0 (nenhuma confirmação)
-        0,                   // Não reter mensagem
-        mqtt_pub_request_cb, // Callback de confirmação
-        NULL                 // Argumento para o callback
-    );
-
-    if (status != ERR_OK) {
-        printf("mqtt_publish falhou ao ser enviada: %d\n", status);
-    }
-}
-
-
 // functions for subscribe
 
 #include <stdio.h>
