@@ -4,7 +4,7 @@
 #include "lwipopts.h"             // Configurações customizadas do lwIP
 #include "include/xor_cipher.h"
 
-#define MQTT_BROKER_IP "192.168.15.145"
+#define MQTT_BROKER_IP "192.168.151.142"
 #define MQTT_PORT 1883
 #define MQTT_TOPIC "escola/sala1/temperatura"
 
@@ -97,6 +97,30 @@ void mqtt_setup_publish(const char *client_id, const char *broker_ip, const char
 // subscribe functions
 //static struct mqtt_client mqtt_client_instance;
 //static ip_addr_t broker_ip;
+uint32_t ultima_timestamp_recebida = 0;
+
+void on_message(char* topic, char* msg) {
+    // 1. Parse do JSON (exemplo simplificado)
+    uint32_t nova_timestamp;
+    float valor;
+    if (sscanf(msg, "{\"valor\":%f,\"ts\":%lu}", &valor, &nova_timestamp) != 2) {
+        printf("Erro no parse da mensagem!\n");
+        return;
+    }
+
+    // 2. Verificação de replay
+    if (nova_timestamp > ultima_timestamp_recebida) {
+        ultima_timestamp_recebida = nova_timestamp;
+        printf("Nova leitura: %.2f (ts: %lu)\n", valor, nova_timestamp);
+        
+        // --> Processar dados aqui <--
+        
+    } else {
+        printf("Replay detectado (ts: %lu <= %lu)\n", 
+               nova_timestamp, ultima_timestamp_recebida);
+    }
+}
+
 
 static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len) {
     printf("Received message on topic: %s\n", topic);
@@ -107,7 +131,8 @@ static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t f
 
     xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
 
-    printf("Payload: %.*s\n", len, descriptografada);
+    //printf("Payload: %.*s\n", len, descriptografada);
+    on_message(MQTT_TOPIC, descriptografada);
 }
 
 static void mqtt_connection_cb_and_subscribe(mqtt_client_t *client, void *arg, mqtt_connection_status_t status) {
@@ -165,60 +190,3 @@ void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, cons
 
 
 
-/*
-// functions for subscribe
-
-#include <stdio.h>
-#include <string.h>
-#include "mqtt_comm.h"
-
-static struct mqtt_client mqtt_client_instance;
-static ip_addr_t broker_ip;
-
-static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len) {
-    printf("Received message on topic: %s\n", topic);
-}
-
-static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
-    printf("Payload: %.*s\n", len, data);
-}
-
-static void mqtt_connection_cb(mqtt_client_t *client, void *arg, mqtt_connection_status_t status) {
-    if (status == MQTT_CONNECT_ACCEPTED) {
-        printf("MQTT connected!\n");
-
-        err_t err = mqtt_subscribe(client, MQTT_TOPIC, 0, NULL, NULL);
-        if (err == ERR_OK) {
-            printf("Subscribed to topic: %s\n", MQTT_TOPIC);
-        } else {
-            printf("Failed to subscribe, error: %d\n", err);
-        }
-    } else {
-        printf("MQTT connection failed with status: %d\n", status);
-    }
-}
-
-void mqtt_init_and_connect(void) {
-    ipaddr_aton(MQTT_BROKER_IP, &broker_ip);
-    mqtt_client_t *client = &mqtt_client_instance;
-
-    struct mqtt_connect_client_info_t ci = {
-        .client_id = "pico_client",
-        .client_user = NULL,
-        .client_pass = NULL,
-        .keep_alive = 60,
-        .will_topic = NULL,
-        .will_msg = NULL,
-        .will_qos = 0,
-        .will_retain = 0,
-        .tls_config = NULL,
-    };
-
-    mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, NULL);
-
-    err_t err = mqtt_client_connect(client, &broker_ip, MQTT_PORT, mqtt_connection_cb, NULL, &ci);
-    if (err != ERR_OK) {
-        printf("Failed to start MQTT connection: %d\n", err);
-    }
-}
-*/
