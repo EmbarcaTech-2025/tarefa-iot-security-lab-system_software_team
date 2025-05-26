@@ -28,7 +28,7 @@ int main() {
     // Loop principal do programa
     while (true) {
         // Publica a mensagem original (não criptografada)
-        //mqtt_comm_publish("escola/sala1/temperatura", mensagem, strlen(mensagem));
+        mqtt_comm_publish("escola/sala1/temperatura", mensagem, strlen(mensagem));
         
         // Alternativa: Publica a mensagem criptografada (atualmente comentada)
         // mqtt_comm_publish("escola/sala1/temperatura", criptografada, strlen(mensagem));
