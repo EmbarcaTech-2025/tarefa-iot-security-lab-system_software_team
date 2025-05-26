@@ -20,8 +20,8 @@ int main() {
 
     // Configura o cliente MQTT
     // Parâmetros: ID do cliente, IP do broker, usuário, senha
-    mqtt_setup_publish("bitdog_publisher", "192.168.15.145", "aluno", "senha123");
-    //mqtt_setup_and_subscribe("bitdog_subscriber", "192.168.15.145", "aluno", "senha123");
+    //mqtt_setup_publish("bitdog_publisher", "192.168.15.145", "aluno", "senha123");
+    mqtt_setup_and_subscribe("bitdog_subscriber", "192.168.15.23", "aluno", "senha123");
 
     // Mensagem original a ser enviada
     const char *mensagem = "25";
@@ -41,7 +41,7 @@ int main() {
     // Loop principal do programa
     while (true) {
         // Publica a mensagem original (não criptografada)
-        mqtt_comm_publish("escola/sala1/temperatura", mensagem, strlen(mensagem));
+        //mqtt_comm_publish("escola/sala1/temperatura", mensagem, strlen(mensagem));
         
         // Alternativa: Publica a mensagem criptografada (atualmente comentada)
         //mqtt_comm_publish("escola/sala1/temperatura", criptografada, strlen(mensagem));
