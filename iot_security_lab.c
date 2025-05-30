@@ -11,8 +11,8 @@
 
 int main() {
     // variaveis de inicializacao
-    uint is_subscriber = 1;
-    uint is_publisher = 0;
+    uint is_subscriber = 0;
+    uint is_publisher = 1;
     uint with_cryptography = 1;
     const char* mqtt_topic = "escola/sala1/temperatura";
     uint xor_key = 42;
