@@ -13,7 +13,7 @@ int main() {
     // variaveis de inicializacao
     uint is_subscriber = 0;
     uint is_publisher = 1;
-    uint with_cryptography = 1;
+    uint with_cryptography = 0;
     const char* mqtt_topic = "escola/sala1/temperatura";
     uint xor_key = 42;
     const char *IP = "192.168.15.145";
@@ -74,6 +74,8 @@ int main() {
                 
                 // Alternativa: Publica a mensagem criptografada (atualmente comentada)
                 mqtt_comm_publish(mqtt_topic, criptografada, strlen(mensagem));
+            } else {
+                mqtt_comm_publish(mqtt_topic, mensagem, strlen(mensagem));
             }
 
             // wait 5 seconds before the next publishing
