@@ -59,6 +59,7 @@ int main() {
             time_t seconds = time(NULL);
 
             sprintf(mensagem, "{\"valor\":%.2f,\"ts\":%lu}", payload, seconds);
+            printf("Mensagem enviada: %s\n", mensagem);
 
             // Publica a mensagem original (não criptografada)
             //mqtt_comm_publish("escola/sala1/temperatura", mensagem, strlen(mensagem));
