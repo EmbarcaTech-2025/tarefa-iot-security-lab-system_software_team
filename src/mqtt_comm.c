@@ -126,14 +126,21 @@ static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len
     printf("Received message on topic: %s\n", topic);
 }
 
+/*
 static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
     uint8_t descriptografada[101];
 
-    xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
+    
+    //xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
 
     //printf("Payload: %.*s\n", len, descriptografada);
-    on_message((char*)arg, descriptografada);
+   //on_message((char*)arg, descriptografada);
+    
+    gpio_put(led_verde, data[0]);
+
+
 }
+*/
 
 static void mqtt_connection_cb_and_subscribe(mqtt_client_t *client, void *arg, mqtt_connection_status_t status) {
     if (status == MQTT_CONNECT_ACCEPTED) {
@@ -151,9 +158,9 @@ static void mqtt_connection_cb_and_subscribe(mqtt_client_t *client, void *arg, m
     }
 }
 
-void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, const char *user, const char *pass, const char* mqtt_topic) {
+void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, const char *user, const char *pass, Subscriber_Data *arguments_to_subscriber) {
     ip_addr_t broker_addr;  // Estrutura para armazenar o IP do broker
-    void *arg = mqtt_topic;
+    void *arg = arguments_to_subscriber->mqtt_topic;
     
     // Converte o IP de string para formato numérico
     if (!ip4addr_aton(broker_ip, &broker_addr)) {
@@ -175,7 +182,9 @@ void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, cons
         .client_pass = pass      // Senha (opcional)
     };
 
-    mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, (void*)mqtt_topic);
+    mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, 
+        arguments_to_subscriber->function, 
+        (void*)arguments_to_subscriber->mqtt_topic);
 
 
     // Inicia a conexão com o broker

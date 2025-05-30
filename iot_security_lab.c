@@ -8,13 +8,51 @@
 #include "include/mqtt_comm.h"      // Funções personalizadas para MQTT
 #include "include/xor_cipher.h"     // Funções de cifra XOR
 
+uint led_verde = 11;
+uint with_cryptography = 1;
+
+void start_gpios() {
+    gpio_init(led_verde);
+    gpio_set_dir(led_verde, GPIO_OUT);
+    gpio_put(led_verde, 0);
+}
+
+
+void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
+    uint8_t descriptografada[101];
+    uint led_status;
+
+    if (with_cryptography) {
+        xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
+        printf("Payload: %.*s\n", len, descriptografada);
+        on_message((char*)arg, descriptografada);
+
+
+    } else {
+        printf("Payload: %s\n", data);
+        on_message((char*)arg, data);
+
+    }
+
+
+    if (data[0] == '1') {
+        led_status = 1;
+    }
+    else if (data[0] == '0') {
+        led_status = 0;
+    }
+
+    gpio_put(led_verde, led_status);
+
+
+}
 
 int main() {
     // variaveis de inicializacao
-    uint is_subscriber = 0;
-    uint is_publisher = 1;
-    uint with_cryptography = 0;
-    const char* mqtt_topic = "escola/sala1/temperatura";
+    uint is_subscriber = 1;
+    uint is_publisher = 0;
+    const char* mqtt_topic = "bitdoglab/atuadores/led_verde"; 
+    //const char* mqtt_topic = "escola/sala1/temperatura";
     uint xor_key = 42;
     const char *IP = "192.168.15.145";
     const char *USER = "aluno";
@@ -25,10 +63,14 @@ int main() {
     char SSID[] = "VIVOFIBRA-5598";
     char SSID_PASSWORD[] = "4674B29BC2";
 
+    
 
     // Inicializa todas as interfaces de I/O padrão (USB serial, etc.)
     stdio_init_all();
     
+    // inicia gpios 
+    start_gpios();
+
     // Conecta à rede WiFi
     // Parâmetros: Nome da rede (SSID)R e senha
     connect_to_wifi(SSID, SSID_PASSWORD);
@@ -38,7 +80,14 @@ int main() {
     if (is_subscriber) {
         //mqtt_setup_and_subscribe("bitdog_subscriber", "192.168.151.142", "aluno", "senha123");
         strcpy(client_id, client_subscriber);
-        mqtt_setup_and_subscribe(client_id, IP, USER, USER_PASSWORD, mqtt_topic);
+
+        Subscriber_Data arguments_to_subscriber = {
+            .function = mqtt_incoming_data_cb,
+            .mqtt_topic = mqtt_topic
+        };
+
+
+        mqtt_setup_and_subscribe(client_id, IP, USER, USER_PASSWORD, &arguments_to_subscriber);
     } 
     if (is_publisher) {
         //mqtt_setup_publish("bitdog_publisher", "192.168.151.142", "aluno", "senha123");
