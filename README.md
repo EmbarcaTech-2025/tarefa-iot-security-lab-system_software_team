@@ -48,7 +48,8 @@ A **Etapa 4**(Adicionar autenticação simples no broker e configurar no cliente
 
 A **Etapa 5**(Ofuscar o conteúdo para evitar sniffing básico
 ) do roteiro foi atendida com sucesso conforme podemos ver pelos printscreens abaixo: 
-- Wireshark mostra conteúdo ofuscado:  
+- Wireshark mostra conteúdo ofuscado:
+![mqtt wireshark](assets/5_daltro_publisher_wireshark.png)  
 ![mqtt publisher](assets/5_daltro_publisher_criptografado_com_xor.png)
 
 - Subscriber consegue decifrar aplicando a mesma função XOR  

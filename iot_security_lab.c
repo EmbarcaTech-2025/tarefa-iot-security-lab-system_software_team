@@ -49,8 +49,8 @@ void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
 
 int main() {
     // variaveis de inicializacao
-    uint is_subscriber = 1;
-    uint is_publisher = 0;
+    uint is_subscriber = 0;
+    uint is_publisher = 1;
     //const char* mqtt_topic = "bitdoglab/atuadores/led_verde"; 
     const char* mqtt_topic = "escola/sala1/temperatura";
     uint xor_key = 42;
