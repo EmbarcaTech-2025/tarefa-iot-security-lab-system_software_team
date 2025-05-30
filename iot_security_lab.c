@@ -24,7 +24,7 @@ void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
 
     if (with_cryptography) {
         xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
-        printf("Payload: %.*s\n", len, descriptografada);
+        //printf("Payload: %.*s\n", len, descriptografada);
         on_message((char*)arg, descriptografada);
 
 
@@ -51,8 +51,8 @@ int main() {
     // variaveis de inicializacao
     uint is_subscriber = 1;
     uint is_publisher = 0;
-    const char* mqtt_topic = "bitdoglab/atuadores/led_verde"; 
-    //const char* mqtt_topic = "escola/sala1/temperatura";
+    //const char* mqtt_topic = "bitdoglab/atuadores/led_verde"; 
+    const char* mqtt_topic = "escola/sala1/temperatura";
     uint xor_key = 42;
     const char *IP = "192.168.15.145";
     const char *USER = "aluno";
