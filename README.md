@@ -61,3 +61,9 @@ A **Etapa 6**(Adicionar timestamp e validar mensagens no subscriber) do roteiro 
 Apenas novos timestamps são aceitos:  
   * Publisher: ![publisher](assets/6_kyara_publisher_com_timestamp.png)
   * Subscriber: ![subscriber](assets/6_daltro_subscriber_com_timestamp_e_dados_criptografados.png)
+
+  ## Análise e Discussão
+
+  Conseguimos alcançar os resultados esperados do experimento e aqui podemos claramente observar que tanto o número de publishers como de subscribers pode ser escalonado facilmente bastando modificar as variáveis de lwipopts.h e as configurações do broker.  
+
+  Podemos aplicar o protocolo MQTT no ambiente escolar para aumentar a eficiência do aprendizado como por exemplo se colocasse-mos uma raspberry pi pico w(publisher) em cada mesa dos alunos conectada a um teclado matricial que enviaria os resultados de algum cálculo realizado no papel e/ou mental para o celular do professor(subscriber) o professor da turma teria um feedback de tempo real nos alunos que conseguiram aprender o conteúdo com sucesso e os alunos que precisam de mais apoio do professor para assimilar o contéudo/técnicas, etc.
