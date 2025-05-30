@@ -4,8 +4,8 @@
 #include "lwipopts.h"             // Configurações customizadas do lwIP
 #include "include/xor_cipher.h"
 
-#define MQTT_BROKER_IP "192.168.151.142"
-#define MQTT_PORT 1883
+//#define MQTT_BROKER_IP "192.168.151.142"
+//#define MQTT_PORT 1883
 #define MQTT_TOPIC "escola/sala1/temperatura"
 
 /* Variável global estática para armazenar a instância do cliente MQTT
