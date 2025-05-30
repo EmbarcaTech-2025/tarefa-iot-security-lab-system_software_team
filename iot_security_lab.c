@@ -8,15 +8,14 @@
 #include "include/mqtt_comm.h"      // Funções personalizadas para MQTT
 #include "include/xor_cipher.h"     // Funções de cifra XOR
 
-uint is_subscriber = 0;
-uint is_publisher = 1;
-uint with_cryptography = 1;
-const char* mqtt_topic = "escola/sala1/temperatura";
-uint xor_key = 42;
-
 
 int main() {
     // variaveis de inicializacao
+    uint is_subscriber = 1;
+    uint is_publisher = 0;
+    uint with_cryptography = 1;
+    const char* mqtt_topic = "escola/sala1/temperatura";
+    uint xor_key = 42;
     const char *IP = "192.168.15.145";
     const char *USER = "aluno";
     const char *USER_PASSWORD = "senha123";
@@ -39,7 +38,7 @@ int main() {
     if (is_subscriber) {
         //mqtt_setup_and_subscribe("bitdog_subscriber", "192.168.151.142", "aluno", "senha123");
         strcpy(client_id, client_subscriber);
-        mqtt_setup_and_subscribe(client_id, IP, USER, USER_PASSWORD);
+        mqtt_setup_and_subscribe(client_id, IP, USER, USER_PASSWORD, mqtt_topic);
     } 
     if (is_publisher) {
         //mqtt_setup_publish("bitdog_publisher", "192.168.151.142", "aluno", "senha123");

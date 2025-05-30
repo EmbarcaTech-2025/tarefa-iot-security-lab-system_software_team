@@ -6,7 +6,7 @@
 
 //#define MQTT_BROKER_IP "192.168.151.142"
 //#define MQTT_PORT 1883
-#define MQTT_TOPIC "escola/sala1/temperatura"
+//#define MQTT_TOPIC "escola/sala1/temperatura"
 
 /* Variável global estática para armazenar a instância do cliente MQTT
  * 'static' limita o escopo deste arquivo */
@@ -99,11 +99,11 @@ void mqtt_setup_publish(const char *client_id, const char *broker_ip, const char
 //static ip_addr_t broker_ip;
 uint32_t ultima_timestamp_recebida = 0;
 
-void on_message(char* topic, char* msg) {
+void on_message(char* mqtt_topic, char* mqtt_msg) {
     // 1. Parse do JSON (exemplo simplificado)
     uint32_t nova_timestamp;
     float valor;
-    if (sscanf(msg, "{\"valor\":%f,\"ts\":%lu}", &valor, &nova_timestamp) != 2) {
+    if (sscanf(mqtt_msg, "{\"valor\":%f,\"ts\":%lu}", &valor, &nova_timestamp) != 2) {
         printf("Erro no parse da mensagem!\n");
         return;
     }
@@ -127,21 +127,22 @@ static void mqtt_incoming_publish_cb(void *arg, const char *topic, u32_t tot_len
 }
 
 static void mqtt_incoming_data_cb(void *arg, const u8_t *data, u16_t len, u8_t flags) {
-    uint8_t descriptografada[16];
+    uint8_t descriptografada[101];
 
     xor_encrypt((uint8_t *)data, descriptografada, strlen(data), 42);
 
     //printf("Payload: %.*s\n", len, descriptografada);
-    on_message(MQTT_TOPIC, descriptografada);
+    on_message((char*)arg, descriptografada);
 }
 
 static void mqtt_connection_cb_and_subscribe(mqtt_client_t *client, void *arg, mqtt_connection_status_t status) {
     if (status == MQTT_CONNECT_ACCEPTED) {
+        char *mqtt_topic = (char *)arg;
         printf("MQTT connected!\n");
 
-        err_t err = mqtt_subscribe(client, MQTT_TOPIC, 0, NULL, NULL);
+        err_t err = mqtt_subscribe(client, mqtt_topic, 0, NULL, NULL);
         if (err == ERR_OK) {
-            printf("Subscribed to topic: %s\n", MQTT_TOPIC);
+            printf("Subscribed to topic: %s\n", mqtt_topic);
         } else {
             printf("Failed to subscribe, error: %d\n", err);
         }
@@ -150,8 +151,9 @@ static void mqtt_connection_cb_and_subscribe(mqtt_client_t *client, void *arg, m
     }
 }
 
-void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, const char *user, const char *pass) {
+void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, const char *user, const char *pass, const char* mqtt_topic) {
     ip_addr_t broker_addr;  // Estrutura para armazenar o IP do broker
+    void *arg = mqtt_topic;
     
     // Converte o IP de string para formato numérico
     if (!ip4addr_aton(broker_ip, &broker_addr)) {
@@ -173,7 +175,7 @@ void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, cons
         .client_pass = pass      // Senha (opcional)
     };
 
-    mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, NULL);
+    mqtt_set_inpub_callback(client, mqtt_incoming_publish_cb, mqtt_incoming_data_cb, (void*)mqtt_topic);
 
 
     // Inicia a conexão com o broker
@@ -184,7 +186,7 @@ void mqtt_setup_and_subscribe(const char *client_id, const char *broker_ip, cons
     //   - mqtt_connection_cb: callback de status
     //   - NULL: argumento opcional para o callback
     //   - &ci: informações de conexão
-    mqtt_client_connect(client, &broker_addr, 1883, mqtt_connection_cb_and_subscribe, NULL, &ci);
+    mqtt_client_connect(client, &broker_addr, 1883, mqtt_connection_cb_and_subscribe, arg, &ci);
 }
 
 
